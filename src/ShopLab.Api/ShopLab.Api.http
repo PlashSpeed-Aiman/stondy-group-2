@@ -1,0 +1,99 @@
+@host = http://localhost:5080
+
+### ── Diagnostics ───────────────────────────────────────────
+GET {{host}}/api/diagnostics/requests
+###
+DELETE {{host}}/api/diagnostics/requests
+###
+GET {{host}}/api/diagnostics/indexes
+###
+GET {{host}}/api/diagnostics/missing-indexes
+###
+POST {{host}}/api/diagnostics/cold-cache
+
+### ── Lab 1: N+1 ────────────────────────────────────────────
+GET {{host}}/api/labs/1-n-plus-one/naive?take=50
+###
+GET {{host}}/api/labs/1-n-plus-one/include?take=50
+###
+GET {{host}}/api/labs/1-n-plus-one/projection?take=50
+###
+GET {{host}}/api/labs/1-n-plus-one/projection?take=50&explain=true
+
+### ── Lab 2: single vs split ────────────────────────────────
+GET {{host}}/api/labs/2-split-query/single?take=3
+###
+GET {{host}}/api/labs/2-split-query/split?take=3
+###
+# Careful: the hottest products produce a very large single-query result
+GET {{host}}/api/labs/2-split-query/single?take=1&hot=true
+###
+GET {{host}}/api/labs/2-split-query/split?take=1&hot=true
+###
+GET {{host}}/api/labs/2-split-query/filtered-include?take=3&hot=true
+
+### ── Lab 3: indexes ────────────────────────────────────────
+GET {{host}}/api/labs/3-indexes/sample-values
+###
+GET {{host}}/api/labs/3-indexes/customer-by-email
+###
+GET {{host}}/api/labs/3-indexes/customers-by-location?country=Malaysia&city=Penang
+###
+GET {{host}}/api/labs/3-indexes/customers-by-location?country=Malaysia
+###
+GET {{host}}/api/labs/3-indexes/orders-by-status?status=Pending&days=30
+###
+GET {{host}}/api/labs/3-indexes/orders-in-year?year=2025&mode=nonsargable
+###
+GET {{host}}/api/labs/3-indexes/orders-in-year?year=2025&mode=sargable
+###
+GET {{host}}/api/labs/3-indexes/product-search?term=Small&mode=startswith
+###
+GET {{host}}/api/labs/3-indexes/product-search?term=Steel&mode=contains
+###
+GET {{host}}/api/labs/3-indexes/top-customers?take=10
+
+### ── Lab 4: tracking ───────────────────────────────────────
+GET {{host}}/api/labs/4-tracking/tracked?take=20000
+###
+GET {{host}}/api/labs/4-tracking/no-tracking?take=20000
+###
+GET {{host}}/api/labs/4-tracking/no-tracking-identity-resolution?take=20000
+###
+GET {{host}}/api/labs/4-tracking/projection?take=20000
+
+### ── Lab 5: pagination ─────────────────────────────────────
+GET {{host}}/api/labs/5-pagination/offset?page=1&pageSize=20
+###
+GET {{host}}/api/labs/5-pagination/offset?page=10000&pageSize=20
+###
+GET {{host}}/api/labs/5-pagination/offset?page=1&pageSize=20&includeTotal=true
+###
+GET {{host}}/api/labs/5-pagination/keyset?pageSize=20
+###
+# paste nextCursor from the previous response
+GET {{host}}/api/labs/5-pagination/keyset?pageSize=20&cursor=PASTE_CURSOR_HERE
+
+### ── Lab 6: pitfalls ───────────────────────────────────────
+GET {{host}}/api/labs/6-pitfalls/count-client?minTotal=1000
+###
+GET {{host}}/api/labs/6-pitfalls/count-server?minTotal=1000
+###
+GET {{host}}/api/labs/6-pitfalls/exists-count?customerId=1
+###
+GET {{host}}/api/labs/6-pitfalls/exists-any?customerId=1
+###
+POST {{host}}/api/labs/6-pitfalls/vip-tracked?minOrders=20
+###
+POST {{host}}/api/labs/6-pitfalls/vip-execute-update?minOrders=20
+
+### ── Regular API ───────────────────────────────────────────
+GET {{host}}/api/products?categoryId=2&page=1&pageSize=20
+###
+GET {{host}}/api/products/42
+###
+GET {{host}}/api/customers/1
+###
+GET {{host}}/api/customers/1/orders?take=10
+###
+GET {{host}}/api/orders/1000
